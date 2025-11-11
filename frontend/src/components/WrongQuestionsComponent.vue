@@ -1,0 +1,277 @@
+<template>
+  <div class="practice-container">
+    <t-card v-if="!practiceQuestions || practiceQuestions.length === 0" class="empty-card">
+      <t-result title="暂无错题可练习" description="继续保持全对！">
+        <template #icon>
+          <t-icon name="check-circle-filled" style="color: #00a870; font-size: 64px;" />
+        </template>
+        <template #operations>
+          <t-button theme="primary" @click="goToExam">开始考试</t-button>
+        </template>
+      </t-result>
+    </t-card>
+
+    <div v-else>
+      <t-card>
+        <template #header>
+          <div class="practice-header">
+            <span>错题练习</span>
+            <span>进度: {{ currentPracticeIndex + 1 }}/{{ practiceQuestions.length }}</span>
+            <t-tag theme="warning">多选题</t-tag>
+          </div>
+        </template>
+
+        <div class="question-content">
+          <h3>{{ currentPracticeQuestion.question }}</h3>
+          
+          <t-checkbox-group 
+            v-model="practiceAnswers[currentPracticeQuestion.id]"
+          >
+            <t-space direction="vertical" size="large">
+              <t-checkbox 
+                v-for="option in currentPracticeQuestion.options" 
+                :key="option.key" 
+                :value="option.key"
+                class="option-item"
+              >
+                {{ option.key }}. {{ option.text }}
+              </t-checkbox>
+            </t-space>
+          </t-checkbox-group>
+        </div>
+
+        <template #footer>
+          <t-space>
+            <t-button 
+              :disabled="currentPracticeIndex === 0" 
+              @click="prevPracticeQuestion"
+            >
+              上一题
+            </t-button>
+            <t-button 
+              v-if="currentPracticeIndex < practiceQuestions.length - 1"
+              theme="primary" 
+              @click="nextPracticeQuestion"
+            >
+              下一题
+            </t-button>
+            <t-button 
+              v-else
+              theme="success" 
+              @click="submitPractice"
+              :disabled="!isAllAnswered"
+            >
+              提交练习
+            </t-button>
+          </t-space>
+        </template>
+      </t-card>
+    </div>
+
+    <!-- 练习结果弹窗 -->
+    <t-dialog
+      v-model:visible="showPracticeResult"
+      header="练习结果"
+      :footer="null"
+      width="600px"
+    >
+      <div class="result-content">
+        <t-result
+          :title="`完成度: ${practiceResult.completed_count}/${practiceQuestions.length}`"
+          :description="`本次正确: ${practiceResult.correct_count}`"
+        >
+          <template #icon>
+            <t-icon name="check-circle-filled" style="color: #00a870; font-size: 64px;" />
+          </template>
+        </t-result>
+        
+        <t-space>
+          <t-button theme="primary" @click="resetPractice">继续练习</t-button>
+          <t-button @click="goToExam">返回考试</t-button>
+        </t-space>
+      </div>
+    </t-dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+import axios from 'axios'
+
+// 定义事件
+const emit = defineEmits(['switch-tab'])
+
+const practiceQuestions = ref([])
+const currentPracticeIndex = ref(0)
+const practiceAnswers = ref({})
+const showPracticeResult = ref(false)
+const practiceResult = ref({})
+
+// 创建axios实例
+// const api = axios.create({
+//   baseURL: 'http://localhost:5000',
+//   timeout: 5000
+// })
+
+const currentPracticeQuestion = computed(() => {
+  if (!practiceQuestions.value.length) return null
+  return practiceQuestions.value[currentPracticeIndex.value]
+})
+
+const isAllAnswered = computed(() => {
+  return practiceQuestions.value.every(q => 
+    practiceAnswers.value[q.id] !== undefined && 
+    Array.isArray(practiceAnswers.value[q.id]) && 
+    practiceAnswers.value[q.id].length > 0
+  )
+})
+
+// 生成模拟错题数据
+const generateMockWrongQuestions = () => {
+  return [
+    {
+      id: 1,
+      question: '模拟错题1：业余无线电的基本原理是什么？',
+      options: [
+        { key: 'A', text: '电磁波传播' },
+        { key: 'B', text: '声波传播' },
+        { key: 'C', text: '光波传播' },
+        { key: 'D', text: '机械波传播' }
+      ],
+      correct: 'A'
+    },
+    {
+      id: 2,
+      question: '模拟错题2：我国业余无线电呼号的结构是？',
+      options: [
+        { key: 'A', text: '字母+数字+字母' },
+        { key: 'B', text: '数字+字母+数字' },
+        { key: 'C', text: '字母+数字+数字' },
+        { key: 'D', text: '数字+字母+字母' }
+      ],
+      correct: 'C'
+    }
+  ]
+}
+
+const loadPracticeQuestions = async () => {
+  try {
+    const response = await axios.get('/api/wrong-questions')
+    practiceQuestions.value = response.data.map(item => item.question)
+    practiceAnswers.value = {}
+    practiceQuestions.value.forEach(q => {
+      practiceAnswers.value[q.id] = []
+    })
+  } catch (error) {
+    console.error('加载错题失败:', error)
+    MessagePlugin.error('加载错题失败，请检查后端服务')
+  }
+}
+
+
+
+const nextPracticeQuestion = () => {
+  if (currentPracticeIndex.value < practiceQuestions.value.length - 1) {
+    currentPracticeIndex.value++
+  }
+}
+
+const prevPracticeQuestion = () => {
+  if (currentPracticeIndex.value > 0) {
+    currentPracticeIndex.value--
+  }
+}
+
+const submitPractice = async () => {
+  try {
+    // 准备提交数据
+    const submitData = {
+      exam_id: `practice_${Date.now()}`,
+      answers: {}
+    }
+    
+    // 构建答案对象
+    for (const q of practiceQuestions.value) {
+      const userAnswer = practiceAnswers.value[q.id]
+      submitData.answers[q.id] = Array.isArray(userAnswer) ? userAnswer.sort().join('') : userAnswer
+    }
+    
+    // 调用后端API提交练习结果
+    const response = await axios.post('/api/wrong-questions/practice-submit', submitData)
+    
+    practiceResult.value = {
+      completed_count: response.data.total,
+      correct_count: response.data.correct_count,
+      score: response.data.score
+    }
+    
+    showPracticeResult.value = true
+    
+    // 显示成功消息
+    MessagePlugin.success(`练习提交成功！正确率: ${response.data.score}%`)
+    
+  } catch (error) {
+    console.error('提交练习失败:', error)
+    MessagePlugin.error('提交练习失败，请检查网络连接')
+  }
+}
+
+const resetPractice = () => {
+  showPracticeResult.value = false
+  currentPracticeIndex.value = 0
+  practiceAnswers.value = {}
+  practiceQuestions.value.forEach(q => {
+    practiceAnswers.value[q.id] = []
+  })
+}
+
+const goToExam = () => {
+  // 触发父组件切换标签页
+  emit('switch-tab', 'exam')
+}
+
+// 辅助函数：字符串排序
+function sorted(str) {
+  return str.split('').sort().join('')
+}
+
+onMounted(() => {
+  // 注释掉自动加载，让用户选择
+  loadPracticeQuestions()
+})
+</script>
+
+<style scoped>
+.practice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.question-content {
+  min-height: 300px;
+}
+
+.option-item {
+  display: block;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.option-item:hover {
+  background-color: #f5f5f5;
+}
+
+.result-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-card {
+  max-width: 500px;
+  margin: 50px auto;
+}
+</style>
