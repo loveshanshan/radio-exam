@@ -1,7 +1,16 @@
 <template>
   <t-config-provider :global-config="globalConfig">
     <!-- 登录页面 -->
-    <LoginComponent v-if="!isLoggedIn" @login-success="handleLoginSuccess" />
+    <Suspense>
+      <template #default>
+        <LoginComponent v-if="!isLoggedIn" @login-success="handleLoginSuccess" />
+      </template>
+      <template #fallback>
+        <div class="loading-container">
+          <t-loading size="large" text="加载中..." />
+        </div>
+      </template>
+    </Suspense>
     
     <!-- 主应用 -->
     <div v-else class="app-container">
@@ -59,13 +68,40 @@
       
       <t-tabs v-model="activeTab" class="main-tabs">
         <t-tab-panel value="exam" label="考试题库">
-          <ExamComponent @switch-tab="activeTab = $event" />
+          <Suspense>
+            <template #default>
+              <ExamComponent @switch-tab="activeTab = $event" />
+            </template>
+            <template #fallback>
+              <div class="loading-container">
+                <t-loading size="medium" text="加载考试组件..." />
+              </div>
+            </template>
+          </Suspense>
         </t-tab-panel>
         <t-tab-panel value="wrong" label="错题本">
-          <WrongQuestionsComponent @switch-tab="activeTab = $event" />
+          <Suspense>
+            <template #default>
+              <WrongQuestionsComponent @switch-tab="activeTab = $event" />
+            </template>
+            <template #fallback>
+              <div class="loading-container">
+                <t-loading size="medium" text="加载错题组件..." />
+              </div>
+            </template>
+          </Suspense>
         </t-tab-panel>
         <t-tab-panel v-if="currentUser.is_admin" value="users" label="用户管理">
-          <UserManagementComponent />
+          <Suspense>
+            <template #default>
+              <UserManagementComponent />
+            </template>
+            <template #fallback>
+              <div class="loading-container">
+                <t-loading size="medium" text="加载用户管理组件..." />
+              </div>
+            </template>
+          </Suspense>
         </t-tab-panel>
 
       </t-tabs>
@@ -79,7 +115,16 @@
       :confirm-btn="null"
       :cancel-btn="{ content: '关闭', theme: 'default' }"
     >
-      <PasswordChangeComponent @success="showPasswordDialog = false" />
+      <Suspense>
+        <template #default>
+          <PasswordChangeComponent @success="showPasswordDialog = false" />
+        </template>
+        <template #fallback>
+          <div class="loading-container">
+            <t-loading size="medium" text="加载修改密码组件..." />
+          </div>
+        </template>
+      </Suspense>
     </t-dialog>
 
     <!-- 账号过期提示弹窗 -->
@@ -99,14 +144,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import axios from 'axios'
-import LoginComponent from './components/LoginComponent.vue'
-import ExamComponent from './components/ExamComponent.vue'
-import WrongQuestionsComponent from './components/WrongQuestionsComponent.vue'
-import UserManagementComponent from './components/UserManagementComponent.vue'
-import PasswordChangeComponent from './components/PasswordChangeComponent.vue'
+
+// 使用懒加载优化组件
+const LoginComponent = defineAsyncComponent(() => import('./components/LoginComponent.vue'))
+const ExamComponent = defineAsyncComponent(() => import('./components/ExamComponent.vue'))
+const WrongQuestionsComponent = defineAsyncComponent(() => import('./components/WrongQuestionsComponent.vue'))
+const UserManagementComponent = defineAsyncComponent(() => import('./components/UserManagementComponent.vue'))
+const PasswordChangeComponent = defineAsyncComponent(() => import('./components/PasswordChangeComponent.vue'))
 
 const activeTab = ref('exam')
 const isLoggedIn = ref(false)
@@ -422,6 +469,16 @@ onMounted(() => {
   .expired-contact {
     font-size: 12px;
   }
+}
+
+/* 加载容器样式 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* 平板端优化 */

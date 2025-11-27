@@ -1,0 +1,8 @@
+# Shell脚本使用LF
+*.sh text eol=lf
+
+# Windows批处理文件使用CRLF
+*.bat text eol=crlf
+
+# 新添加的诊断脚本
+diagnose_502.sh text eol=lf
