@@ -12,7 +12,7 @@ ulimit -n 65536  # 增加文件描述符限制
 export NODE_OPTIONS="--max-old-space-size=4096"
 
 # 0. 拉取最新代码
-echo "0. 拉取最新代码..."
+echo "1. 拉取最新代码..."
 cd /opt/radio-exam
 
 # 检查git状态
@@ -52,11 +52,6 @@ fi
 
 
 
-# 1. 安装后端依赖
-echo "1. 安装后端依赖..."
-cd /opt/radio-exam/backend
-pip install -r requirements.txt
-
 # 2. 重启后端服务
 echo "2. 重启后端服务..."
 sudo systemctl restart radio-exam-backend
@@ -67,57 +62,9 @@ else
     exit 1
 fi
 
-# 3. 重新构建前端
-echo "3. 重新构建前端..."
-cd /opt/radio-exam/frontend
-
-
-# 设置 pnpm 配置以减少内存使用
-export PNPM_REGISTRY=https://registry.npmjs.org/
-export PNPM_STORE_DIR=/tmp/pnpm-store
-export NODE_OPTIONS="--max-old-space-size=2048"
-
-# 尝试安装依赖，增加重试机制
-echo "安装前端依赖..."
-MAX_RETRIES=3
-RETRY_COUNT=0
-
-while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    echo "尝试安装 (第 $((RETRY_COUNT + 1)) 次)..."
-    
-    if pnpm install --force --no-optional --prefer-offline; then
-        echo "✓ 依赖安装成功"
-        break
-    else
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-        echo "✗ 安装失败，等待 10 秒后重试..."
-        sleep 10
-        
-        # 清理可能损坏的缓存
-        pnpm store prune --force || true
-        
-        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-            echo "✗ 依赖安装失败，已达到最大重试次数"
-            echo "尝试使用 npm 作为备选方案..."
-            
-        fi
-    fi
-done
-
-# 构建前端
-echo "构建前端项目..."
-if command -v pnpm &> /dev/null && [ -f "pnpm-lock.yaml" ]; then
-    pnpm  build
-fi
-if [ $? -eq 0 ]; then
-    echo "✓ 前端构建成功"
-else
-    echo "✗ 前端构建失败"
-    exit 1
-fi
 
 # 3. 重启Nginx
-echo "4. 重启Nginx服务..."
+echo "3. 重启Nginx服务..."
 sudo systemctl restart nginx
 if [ $? -eq 0 ]; then
     echo "✓ Nginx服务重启成功"
