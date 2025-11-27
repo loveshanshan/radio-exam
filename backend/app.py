@@ -128,8 +128,12 @@ def check_user_access(user):
     if expire_time:
         try:
             expire_dt = datetime.fromisoformat(expire_time.replace('Z', '+00:00'))
-            days_left = (expire_dt - now).days
-            if days_left < 0:
+            # 计算总的小时差，然后向上取整到天数
+            total_hours = (expire_dt - now).total_seconds() / 3600
+            if total_hours > 0:
+                # 如果还有时间，至少显示1天
+                days_left = max(1, int((total_hours + 23) // 24))
+            else:
                 days_left = 0
         except:
             pass
