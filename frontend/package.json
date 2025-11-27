@@ -20,7 +20,8 @@
     "terser": "^5.26.0",
     "eslint": "^8.55.0",
     "eslint-plugin-vue": "^9.19.0",
-    "@rollup/rollup-linux-x64-gnu": "^4.53.3"
+    "@rollup/rollup-linux-x64-gnu": "^4.53.3",
+    "@esbuild/linux-x64": "^0.21.5"
   },
   "keywords": [
     "vue",
