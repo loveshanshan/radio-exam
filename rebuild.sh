@@ -104,13 +104,22 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             echo "✗ 依赖安装失败，已达到最大重试次数"
             echo "尝试使用 npm 作为备选方案..."
             
-            # 备选方案：使用 npm
+            # 备选方案1：使用 npm
             rm -rf node_modules package-lock.json pnpm-lock.yaml
             if npm install --force; then
                 echo "✓ 使用 npm 安装成功"
             else
-                echo "✗ 所有安装方案都失败"
-                exit 1
+                echo "✗ npm 安装也失败，运行诊断脚本..."
+                
+                # 备选方案2：运行诊断脚本
+                if [ -f "debug-install.sh" ]; then
+                    chmod +x debug-install.sh
+                    ./debug-install.sh
+                else
+                    echo "✗ 诊断脚本不存在，手动安装核心依赖..."
+                    npm install vue@latest vite@latest --save-dev
+                    npm install axios@latest --save
+                fi
             fi
         fi
     fi
