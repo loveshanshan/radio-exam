@@ -3,3 +3,4 @@ node_modules
 __pycache__
 wrong_questions.json
 venv
+frontend/dist
