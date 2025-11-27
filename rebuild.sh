@@ -2,8 +2,15 @@
 
 echo "=== 重启业余无线电考试系统 ==="
 
-# 1. 重启后端服务
-echo "1. 重启后端服务..."
+
+
+# 1. 安装后端依赖
+echo "1. 安装后端依赖..."
+cd /opt/radio-exam/backend
+pip install -r requirements.txt
+
+# 2. 重启后端服务
+echo "2. 重启后端服务..."
 sudo systemctl restart radio-exam-backend
 if [ $? -eq 0 ]; then
     echo "✓ 后端服务重启成功"
@@ -12,9 +19,12 @@ else
     exit 1
 fi
 
-# 2. 重新构建前端
-echo "2. 重新构建前端..."
+# 3. 重新构建前端
+echo "3. 重新构建前端..."
 cd /opt/radio-exam/frontend
+rm -rf node_modules
+npm clean cache
+npm install
 npm run build
 if [ $? -eq 0 ]; then
     echo "✓ 前端构建成功"
@@ -24,7 +34,7 @@ else
 fi
 
 # 3. 重启Nginx
-echo "3. 重启Nginx服务..."
+echo "4. 重启Nginx服务..."
 sudo systemctl restart nginx
 if [ $? -eq 0 ]; then
     echo "✓ Nginx服务重启成功"
