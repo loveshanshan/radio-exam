@@ -128,7 +128,7 @@ done
 # 构建前端
 echo "构建前端项目..."
 if command -v pnpm &> /dev/null && [ -f "pnpm-lock.yaml" ]; then
-    pnpm run build
+    pnpm  build
 else
     npm run build
 fi
