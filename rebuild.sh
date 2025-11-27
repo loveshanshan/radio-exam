@@ -2,6 +2,34 @@
 
 echo "=== 重启业余无线电考试系统 ==="
 
+# 设置非交互模式
+export DEBIAN_FRONTEND=noninteractive
+export PNPM_HOME=/usr/local/bin
+export PATH="$PNPM_HOME:$PATH"
+
+# 0. 拉取最新代码
+echo "0. 拉取最新代码..."
+cd /opt/radio-exam
+
+# 检查git状态
+if ! git status > /dev/null 2>&1; then
+    echo "✗ Git仓库状态检查失败，请检查git配置"
+    exit 1
+fi
+
+# 拉取最新代码
+echo "正在从远程仓库拉取最新代码..."
+if ! git pull origin master; then
+    echo "✗ Git拉取失败，请检查："
+    echo "  1. 网络连接是否正常"
+    echo "  2. Git远程仓库地址是否正确"
+    echo "  3. 是否有权限访问仓库"
+    echo "  4. 本地是否有未提交的更改冲突"
+    exit 1
+fi
+
+echo "✓ 代码拉取成功"
+
 
 
 # 1. 安装后端依赖
@@ -22,10 +50,10 @@ fi
 # 3. 重新构建前端
 echo "3. 重新构建前端..."
 cd /opt/radio-exam/frontend
-rm -rf node_modules
-npm clean cache
-npm install
-npm run build
+rm -rf node_modules package-lock.json pnpm-lock.yaml
+pnpm store prune --force || true
+pnpm install --force --no-optional
+pnpm run build
 if [ $? -eq 0 ]; then
     echo "✓ 前端构建成功"
 else

@@ -1,16 +1,18 @@
 <template>
   <t-config-provider :global-config="globalConfig">
     <!-- 登录页面 -->
-    <Suspense>
-      <template #default>
-        <LoginComponent v-if="!isLoggedIn" @login-success="handleLoginSuccess" />
-      </template>
-      <template #fallback>
-        <div class="loading-container">
-          <t-loading size="large" text="加载中..." />
-        </div>
-      </template>
-    </Suspense>
+    <div v-if="!isLoggedIn" class="login-container">
+      <Suspense>
+        <template #default>
+          <LoginComponent @login-success="handleLoginSuccess" />
+        </template>
+        <template #fallback>
+          <div class="loading-container">
+            <t-loading size="large" text="加载中..." />
+          </div>
+        </template>
+      </Suspense>
+    </div>
     
     <!-- 主应用 -->
     <div v-else class="app-container">
@@ -247,6 +249,11 @@ onMounted(() => {
 </script>
 
 <style>
+.login-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
 .app-container {
   min-height: 100vh;
   background: #f5f5f5;
