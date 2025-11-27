@@ -110,8 +110,30 @@
           </t-tag>
         </div>
         
+        <!-- 移除的题目统计 -->
+        <div v-if="practiceResult.updated_questions && practiceResult.updated_questions.length > 0" class="removed-details">
+          <h4>已掌握题目：</h4>
+          <t-tag v-for="updated in practiceResult.updated_questions.filter(q => q.action === 'removed')" 
+                  :key="updated.question_id" theme="success" variant="light" class="removed-tag">
+            题目{{ updated.question_id }} (连续答对3次)
+          </t-tag>
+        </div>
+        
         <t-space>
-          <t-button theme="primary" @click="resetPractice">继续练习</t-button>
+          <t-button 
+            v-if="hasRemainingQuestions"
+            theme="primary" 
+            @click="resetPractice"
+          >
+            继续练习
+          </t-button>
+          <t-button 
+            v-else
+            theme="success" 
+            disabled
+          >
+            当前错题练习已完成
+          </t-button>
           <t-button @click="goToExam">返回考试</t-button>
         </t-space>
       </div>
@@ -132,6 +154,7 @@ const currentPracticeIndex = ref(0)
 const practiceAnswers = ref({})
 const showPracticeResult = ref(false)
 const practiceResult = ref({})
+const hasRemainingQuestions = ref(true)
 
 // 创建axios实例
 // const api = axios.create({
@@ -206,8 +229,14 @@ const submitPractice = async () => {
       score: response.data.score,
       wrong_questions: response.data.wrong_questions || [],
       correct_questions: response.data.correct_questions || [],
+      updated_questions: response.data.updated_questions || [],
       results: response.data.results || []
     }
+    
+    // 检查是否还有剩余的错题
+    const removedCount = (response.data.updated_questions || []).filter(q => q.action === 'removed').length
+    const remainingCount = response.data.total - removedCount
+    hasRemainingQuestions.value = remainingCount > 0
     
     showPracticeResult.value = true
     
@@ -220,10 +249,15 @@ const submitPractice = async () => {
   }
 }
 
-const resetPractice = () => {
+const resetPractice = async () => {
   showPracticeResult.value = false
   currentPracticeIndex.value = 0
   practiceAnswers.value = {}
+  
+  // 重新加载错题，获取最新的错题列表
+  await loadPracticeQuestions()
+  
+  // 重置答案
   practiceQuestions.value.forEach(q => {
     practiceAnswers.value[q.id] = []
   })
@@ -325,6 +359,25 @@ onMounted(() => {
 
 .correct-tag {
   margin: 4px;
+}
+
+/* 已掌握题目样式 */
+.removed-details {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.removed-details h4 {
+  color: #00a870;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.removed-tag {
+  margin: 4px;
+  background-color: #f0f9ff;
+  border-color: #b3e0ff;
+  color: #0052cc;
 }
 
 /* 响应式设计 */
