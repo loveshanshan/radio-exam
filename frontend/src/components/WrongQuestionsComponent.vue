@@ -73,17 +73,42 @@
       v-model:visible="showPracticeResult"
       header="练习结果"
       :footer="null"
-      width="600px"
+      width="700px"
     >
       <div class="result-content">
         <t-result
           :title="`完成度: ${practiceResult.completed_count}/${practiceQuestions.length}`"
-          :description="`本次正确: ${practiceResult.correct_count}`"
+          :description="`本次正确: ${practiceResult.correct_count} (正确率: ${practiceResult.score || 0}%)`"
         >
           <template #icon>
-            <t-icon name="check-circle-filled" style="color: #00a870; font-size: 64px;" />
+            <t-icon :name="(practiceResult.score || 0) >= 60 ? 'check-circle-filled' : 'error-circle-filled'" 
+                   :style="`color: ${(practiceResult.score || 0) >= 60 ? '#00a870' : '#e34d59'}; font-size: 64px;`" />
           </template>
         </t-result>
+        
+        <!-- 错题详情 -->
+        <div v-if="practiceResult.wrong_questions && practiceResult.wrong_questions.length > 0" class="wrong-details">
+          <h4>错题详情：</h4>
+          <t-list>
+            <t-list-item v-for="wrong in practiceResult.wrong_questions" :key="wrong.question_id">
+              <div class="wrong-item">
+                <p><strong>题目ID:</strong> {{ wrong.question_id }}</p>
+                <p><strong>题目:</strong> {{ wrong.question_text }}</p>
+                <p><strong>你的答案:</strong> <span class="wrong-answer">{{ wrong.user_answer || '未作答' }}</span></p>
+                <p><strong>正确答案:</strong> <span class="correct-answer">{{ wrong.correct_answer }}</span></p>
+              </div>
+            </t-list-item>
+          </t-list>
+        </div>
+        
+        <!-- 正确题目统计 -->
+        <div v-if="practiceResult.correct_questions && practiceResult.correct_questions.length > 0" class="correct-details">
+          <h4>答对题目：</h4>
+          <t-tag v-for="correct in practiceResult.correct_questions" :key="correct.question_id" 
+                  theme="success" class="correct-tag">
+            题目{{ correct.question_id }}
+          </t-tag>
+        </div>
         
         <t-space>
           <t-button theme="primary" @click="resetPractice">继续练习</t-button>
@@ -200,10 +225,14 @@ const submitPractice = async () => {
     // 调用后端API提交练习结果
     const response = await axios.post('/api/wrong-questions/practice-submit', submitData)
     
+    // 处理响应数据，确保包含完整的错题和正确题目信息
     practiceResult.value = {
       completed_count: response.data.total,
       correct_count: response.data.correct_count,
-      score: response.data.score
+      score: response.data.score,
+      wrong_questions: response.data.wrong_questions || [],
+      correct_questions: response.data.correct_questions || [],
+      results: response.data.results || []
     }
     
     showPracticeResult.value = true
@@ -273,5 +302,57 @@ onMounted(() => {
 .empty-card {
   max-width: 500px;
   margin: 50px auto;
+}
+
+/* 错题详情样式 */
+.wrong-details {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.wrong-details h4 {
+  color: #e34d59;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.wrong-item {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.wrong-item p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wrong-answer {
+  color: #e34d59;
+  font-weight: bold;
+}
+
+.correct-answer {
+  color: #00a870;
+  font-weight: bold;
+}
+
+/* 正确题目样式 */
+.correct-details {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.correct-details h4 {
+  color: #00a870;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.correct-tag {
+  margin: 4px;
 }
 </style>

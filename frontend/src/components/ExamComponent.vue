@@ -86,7 +86,7 @@
       v-model:visible="showResult"
       header="考试结果"
       :footer="null"
-      width="600px"
+      width="700px"
     >
       <div class="result-content">
         <t-result
@@ -99,6 +99,7 @@
           </template>
         </t-result>
         
+        <!-- 错题详情 -->
         <div v-if="examResult.wrong_questions && examResult.wrong_questions.length > 0" class="wrong-details">
           <h4>错题详情：</h4>
           <t-list>
@@ -106,11 +107,20 @@
               <div class="wrong-item">
                 <p><strong>题目ID:</strong> {{ wrong.question_id }}</p>
                 <p><strong>题目:</strong> {{ wrong.question_text }}</p>
-                <p><strong>你的答案:</strong> {{ wrong.user_answer || '未作答' }}</p>
-                <p><strong>正确答案:</strong> {{ wrong.correct_answer }}</p>
+                <p><strong>你的答案:</strong> <span class="wrong-answer">{{ wrong.user_answer || '未作答' }}</span></p>
+                <p><strong>正确答案:</strong> <span class="correct-answer">{{ wrong.correct_answer }}</span></p>
               </div>
             </t-list-item>
           </t-list>
+        </div>
+        
+        <!-- 正确题目统计 -->
+        <div v-if="examResult.correct_questions && examResult.correct_questions.length > 0" class="correct-details">
+          <h4>答对题目：</h4>
+          <t-tag v-for="correct in examResult.correct_questions" :key="correct.question_id" 
+                  theme="success" class="correct-tag">
+            题目{{ correct.question_id }}
+          </t-tag>
         </div>
         
         <t-space>
@@ -293,18 +303,56 @@ const goToWrongPractice = () => {
   padding: 20px;
 }
 
+/* 错题详情样式 */
 .wrong-details {
-  margin: 20px 0;
+  margin-top: 20px;
   text-align: left;
-  max-height: 300px;
-  overflow-y: auto;
+}
+
+.wrong-details h4 {
+  color: #e34d59;
+  margin-bottom: 10px;
+  font-size: 16px;
 }
 
 .wrong-item {
-  padding: 10px;
-  border-left: 3px solid #e34d59;
-  background-color: #fff1f1;
-  margin: 5px 0;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.wrong-item p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wrong-answer {
+  color: #e34d59;
+  font-weight: bold;
+}
+
+.correct-answer {
+  color: #00a870;
+  font-weight: bold;
+}
+
+/* 正确题目样式 */
+.correct-details {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.correct-details h4 {
+  color: #00a870;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.correct-tag {
+  margin: 4px;
 }
 
 .start-card {

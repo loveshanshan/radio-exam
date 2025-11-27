@@ -132,6 +132,7 @@ def submit_exam():
     results = []
     correct_count = 0
     wrong_questions_list = []
+    correct_questions_list = []
     
     for q_id, user_answer in answers.items():
         question = next((q for q in questions if q['id'] == q_id), None)
@@ -147,6 +148,13 @@ def submit_exam():
             
             if is_correct:
                 correct_count += 1
+                # 添加到正确题目列表
+                correct_questions_list.append({
+                    'question_id': q_id,
+                    'question_text': question.get('question', ''),
+                    'user_answer': user_answer,
+                    'correct_answer': question.get('correct', '')
+                })
             else:
                 # 添加到错题本
                 if q_id not in wrong_questions:
@@ -176,6 +184,7 @@ def submit_exam():
         'correct_count': correct_count,
         'score': int(correct_count / len(answers) * 100) if answers else 0,
         'wrong_questions': wrong_questions_list,
+        'correct_questions': correct_questions_list,
         'results': results
     })
 
@@ -267,6 +276,8 @@ def submit_practice_exam():
     results = []
     correct_count = 0
     updated_questions = []
+    wrong_questions_list = []
+    correct_questions_list = []
     
     for q_id, user_answer in answers.items():
         if q_id in wrong_questions:
@@ -283,6 +294,14 @@ def submit_practice_exam():
             if is_correct:
                 correct_count += 1
                 wrong_questions[q_id]['correct_count'] += 1
+                # 添加到正确题目列表
+                correct_questions_list.append({
+                    'question_id': q_id,
+                    'question_text': question.get('question', ''),
+                    'user_answer': user_answer,
+                    'correct_answer': question.get('correct', '')
+                })
+                
                 # 连续做对3次，从错题本移除
                 if wrong_questions[q_id]['correct_count'] >= 3:
                     updated_questions.append({
@@ -300,6 +319,15 @@ def submit_practice_exam():
                 wrong_questions[q_id]['correct_count'] = 0
                 wrong_questions[q_id]['wrong_count'] += 1
                 wrong_questions[q_id]['last_wrong_time'] = datetime.now().isoformat()
+                
+                # 添加到错题列表
+                wrong_questions_list.append({
+                    'question_id': q_id,
+                    'question_text': question.get('question', ''),
+                    'user_answer': user_answer,
+                    'correct_answer': question.get('correct', '')
+                })
+                
                 updated_questions.append({
                     'question_id': q_id,
                     'action': 'wrong',
@@ -314,7 +342,9 @@ def submit_practice_exam():
         'correct_count': correct_count,
         'score': int(correct_count / len(answers) * 100) if answers else 0,
         'updated_questions': updated_questions,
-        'results': results
+        'results': results,
+        'wrong_questions': wrong_questions_list,
+        'correct_questions': correct_questions_list
     })
 
 @app.route('/api/system/status', methods=['GET'])
