@@ -6,3 +6,4 @@
 
 # 新添加的诊断脚本
 diagnose_502.sh text eol=lf
+fix_vite_build.sh text eol=lf
