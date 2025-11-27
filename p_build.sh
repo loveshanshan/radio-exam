@@ -33,6 +33,8 @@ if ! git pull origin master; then
 fi
 
 echo "✓ 代码拉取成功"
+echo "更新后端依赖包.."
+/opt/radio-exam/venv/bin/pip install -r ./backend/requirements.txt 
 
 # 检查系统资源
 echo "检查系统资源..."
