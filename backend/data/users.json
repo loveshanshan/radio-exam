@@ -1,0 +1,20 @@
+{
+  "admin_001": {
+    "user_id": "admin_001",
+    "phone": "17610788168",
+    "password": "4194d1706ed1f408d5e02d672777019f4d5385c766a8c6ca8acba3167d36a7b9",
+    "is_admin": true,
+    "created_at": "2025-11-27T16:32:21.192668",
+    "status": "active"
+  },
+  "user_20251127164317": {
+    "user_id": "user_20251127164317",
+    "phone": "13103779102",
+    "password": "6a781733f80575696bd09436f52a82b4af373ca37793e514b61845d0047305ac",
+    "is_admin": false,
+    "created_at": "2025-11-27T16:43:17.672148",
+    "status": "active",
+    "start_time": "2025-11-27 00:00:01",
+    "expire_time": "2025-11-28 23:59:59"
+  }
+}

@@ -234,8 +234,6 @@ const submitExam = async () => {
       answers: processedAnswers
     })
     
-    console.log('考试提交结果:', response.data)
-    
     // 确保结果数据包含所有必要的字段
     examResult.value = {
       exam_id: response.data.exam_id || currentExam.value.exam_id,
@@ -248,7 +246,6 @@ const submitExam = async () => {
       results: response.data.results || []
     }
     
-    console.log('处理后的考试结果:', examResult.value)
     showResult.value = true
   } catch (error) {
     console.error('提交试卷失败:', error)
@@ -365,5 +362,118 @@ const goToWrongPractice = () => {
   color: #e34d59;
   font-weight: bold;
   margin-top: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .exam-container {
+    padding: 16px;
+  }
+  
+  .start-card {
+    max-width: 100%;
+    margin: 50px 16px;
+  }
+  
+  .exam-header {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .question-content h3 {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .option-item {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .wrong-details,
+  .correct-details {
+    margin-top: 16px;
+  }
+  
+  .wrong-item {
+    padding: 8px;
+    margin-bottom: 6px;
+  }
+  
+  .wrong-item p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-container {
+    padding: 8px;
+  }
+  
+  .start-card {
+    margin: 20px 8px;
+  }
+  
+  .question-content h3 {
+    font-size: 14px;
+  }
+  
+  .option-item {
+    font-size: 12px;
+  }
+  
+  .wrong-details h4,
+  .correct-details h4 {
+    font-size: 14px;
+  }
+  
+  .wrong-item p {
+    font-size: 11px;
+  }
+  
+  .result-content {
+    padding: 16px;
+  }
+  
+  .result-content h2 {
+    font-size: 20px;
+  }
+  
+  .result-content p {
+    font-size: 14px;
+  }
+}
+
+/* 平板端优化 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .start-card {
+    max-width: 500px;
+    margin: 80px auto;
+  }
+  
+  .question-content h3 {
+    font-size: 18px;
+  }
+  
+  .option-item {
+    font-size: 15px;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+  .start-card {
+    max-width: 500px;
+    margin: 120px auto;
+  }
+  
+  .question-content h3 {
+    font-size: 20px;
+  }
+  
+  .option-item {
+    font-size: 16px;
+  }
 }
 </style>

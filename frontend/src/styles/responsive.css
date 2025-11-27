@@ -1,0 +1,270 @@
+/* 全局响应式设计样式 */
+
+/* 基础断点定义 */
+:root {
+  --mobile-max: 480px;
+  --tablet-max: 768px;
+  --tablet-min: 769px;
+  --desktop-max: 1024px;
+  --desktop-min: 1025px;
+  --large-desktop: 1200px;
+}
+
+/* 通用容器样式 */
+.responsive-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 通用卡片样式 */
+.responsive-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* 通用按钮组样式 */
+.responsive-button-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 通用表单样式 */
+.responsive-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* 手机端样式 */
+@media (max-width: 480px) {
+  .responsive-container {
+    padding: 0 12px;
+  }
+  
+  .responsive-card {
+    padding: 12px;
+    border-radius: 6px;
+  }
+  
+  .responsive-button-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .responsive-form {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+  
+  /* 通用字体大小调整 */
+  .responsive-text-large {
+    font-size: 16px;
+  }
+  
+  .responsive-text-medium {
+    font-size: 14px;
+  }
+  
+  .responsive-text-small {
+    font-size: 12px;
+  }
+  
+  /* 隐藏部分元素 */
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* 移动端专用显示 */
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* 平板端样式 */
+@media (min-width: 481px) and (max-width: 768px) {
+  .responsive-container {
+    padding: 0 16px;
+  }
+  
+  .responsive-card {
+    padding: 16px;
+  }
+  
+  .responsive-form {
+    max-width: 600px;
+  }
+  
+  /* 通用字体大小调整 */
+  .responsive-text-large {
+    font-size: 18px;
+  }
+  
+  .responsive-text-medium {
+    font-size: 15px;
+  }
+  
+  .responsive-text-small {
+    font-size: 13px;
+  }
+  
+  /* 平板端隐藏元素 */
+  .hide-tablet {
+    display: none !important;
+  }
+  
+  /* 平板端专用显示 */
+  .show-tablet {
+    display: block !important;
+  }
+}
+
+/* 桌面端样式 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-container {
+    padding: 0 20px;
+  }
+  
+  .responsive-card {
+    padding: 18px;
+  }
+  
+  .responsive-form {
+    max-width: 700px;
+  }
+  
+  /* 通用字体大小调整 */
+  .responsive-text-large {
+    font-size: 19px;
+  }
+  
+  .responsive-text-medium {
+    font-size: 15px;
+  }
+  
+  .responsive-text-small {
+    font-size: 13px;
+  }
+  
+  /* 桌面端隐藏元素 */
+  .hide-desktop {
+    display: none !important;
+  }
+  
+  /* 桌面端专用显示 */
+  .show-desktop {
+    display: block !important;
+  }
+}
+
+/* 大屏幕样式 */
+@media (min-width: 1025px) {
+  .responsive-container {
+    padding: 0 24px;
+  }
+  
+  .responsive-card {
+    padding: 24px;
+  }
+  
+  .responsive-form {
+    max-width: 800px;
+  }
+  
+  /* 通用字体大小调整 */
+  .responsive-text-large {
+    font-size: 20px;
+  }
+  
+  .responsive-text-medium {
+    font-size: 16px;
+  }
+  
+  .responsive-text-small {
+    font-size: 14px;
+  }
+  
+  /* 大屏幕隐藏元素 */
+  .hide-large {
+    display: none !important;
+  }
+  
+  /* 大屏幕专用显示 */
+  .show-large {
+    display: block !important;
+  }
+}
+
+/* 通用工具类 */
+.text-center-mobile {
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .text-center-mobile {
+    text-align: left;
+  }
+}
+
+.flex-column-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 769px) {
+  .flex-column-mobile {
+    flex-direction: row;
+  }
+}
+
+.full-width-mobile {
+  width: 100%;
+}
+
+@media (min-width: 769px) {
+  .full-width-mobile {
+    width: auto;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  .responsive-button-group button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .responsive-card {
+    touch-action: manipulation;
+  }
+}
+
+/* 高分辨率屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .responsive-card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .responsive-card {
+    background: #1f2937;
+    color: #f9fafb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .responsive-card {
+    transition: none;
+  }
+  
+  .responsive-button-group button {
+    transition: none;
+  }
+}

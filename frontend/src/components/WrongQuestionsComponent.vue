@@ -152,33 +152,7 @@ const isAllAnswered = computed(() => {
   )
 })
 
-// 生成模拟错题数据
-const generateMockWrongQuestions = () => {
-  return [
-    {
-      id: 1,
-      question: '模拟错题1：业余无线电的基本原理是什么？',
-      options: [
-        { key: 'A', text: '电磁波传播' },
-        { key: 'B', text: '声波传播' },
-        { key: 'C', text: '光波传播' },
-        { key: 'D', text: '机械波传播' }
-      ],
-      correct: 'A'
-    },
-    {
-      id: 2,
-      question: '模拟错题2：我国业余无线电呼号的结构是？',
-      options: [
-        { key: 'A', text: '字母+数字+字母' },
-        { key: 'B', text: '数字+字母+数字' },
-        { key: 'C', text: '字母+数字+数字' },
-        { key: 'D', text: '数字+字母+字母' }
-      ],
-      correct: 'C'
-    }
-  ]
-}
+
 
 const loadPracticeQuestions = async () => {
   try {
@@ -260,10 +234,7 @@ const goToExam = () => {
   emit('switch-tab', 'exam')
 }
 
-// 辅助函数：字符串排序
-function sorted(str) {
-  return str.split('').sort().join('')
-}
+
 
 onMounted(() => {
   // 注释掉自动加载，让用户选择
@@ -354,5 +325,106 @@ onMounted(() => {
 
 .correct-tag {
   margin: 4px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .practice-container {
+    padding: 16px;
+  }
+  
+  .empty-card {
+    max-width: 100%;
+    margin: 30px 16px;
+  }
+  
+  .practice-header {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .question-content h3 {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .option-item {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .wrong-details,
+  .correct-details {
+    margin-top: 16px;
+  }
+  
+  .wrong-item {
+    padding: 8px;
+    margin-bottom: 6px;
+  }
+  
+  .wrong-item p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .practice-container {
+    padding: 8px;
+  }
+  
+  .empty-card {
+    margin: 20px 8px;
+  }
+  
+  .question-content h3 {
+    font-size: 14px;
+  }
+  
+  .option-item {
+    font-size: 12px;
+  }
+  
+  .wrong-details h4,
+  .correct-details h4 {
+    font-size: 14px;
+  }
+  
+  .wrong-item p {
+    font-size: 11px;
+  }
+}
+
+/* 平板端优化 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .empty-card {
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  
+  .question-content h3 {
+    font-size: 18px;
+  }
+  
+  .option-item {
+    font-size: 15px;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+  .empty-card {
+    max-width: 600px;
+    margin: 60px auto;
+  }
+  
+  .question-content h3 {
+    font-size: 20px;
+  }
+  
+  .option-item {
+    font-size: 16px;
+  }
 }
 </style>
