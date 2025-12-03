@@ -18,6 +18,12 @@ importers:
         specifier: ^3.4.0
         version: 3.5.25
     devDependencies:
+      '@esbuild/linux-x64':
+        specifier: ^0.21.5
+        version: 0.21.5
+      '@rollup/rollup-linux-x64-gnu':
+        specifier: ^4.53.3
+        version: 4.53.3
       '@vitejs/plugin-vue':
         specifier: ^5.0.0
         version: 5.2.4(vite@5.4.21(terser@5.44.1))(vue@3.5.25)
@@ -1088,8 +1094,7 @@ snapshots:
   '@esbuild/linux-s390x@0.21.5':
     optional: true
 
-  '@esbuild/linux-x64@0.21.5':
-    optional: true
+  '@esbuild/linux-x64@0.21.5': {}
 
   '@esbuild/netbsd-x64@0.21.5':
     optional: true
@@ -1222,8 +1227,7 @@ snapshots:
   '@rollup/rollup-linux-s390x-gnu@4.53.3':
     optional: true
 
-  '@rollup/rollup-linux-x64-gnu@4.53.3':
-    optional: true
+  '@rollup/rollup-linux-x64-gnu@4.53.3': {}
 
   '@rollup/rollup-linux-x64-musl@4.53.3':
     optional: true
