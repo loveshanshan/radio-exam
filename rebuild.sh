@@ -158,7 +158,7 @@ sudo systemctl is-active --quiet radio-exam-backend && echo "✓ 后端服务运
 sudo systemctl is-active --quiet nginx && echo "✓ Nginx服务运行正常" || echo "✗ Nginx服务异常"
 
 # 测试API
-curl -s http://localhost:5000/api/questions > /dev/null && echo "✓ 后端API响应正常" || echo "✗ 后端API响应异常"
+curl -s http://localhost:5001/api/questions > /dev/null && echo "✓ 后端API响应正常" || echo "✗ 后端API响应异常"
 curl -s http://localhost/api/questions > /dev/null && echo "✓ Nginx代理正常" || echo "✗ Nginx代理异常"
 
 echo "=== 重启完成 ==="

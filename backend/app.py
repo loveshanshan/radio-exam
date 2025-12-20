@@ -900,7 +900,7 @@ if __name__ == '__main__':
     print(f"题目数量: {len(load_questions())}")
     print(f"错题数量: {len(load_wrong_questions())}")
     print(f"用户数量: {len(load_users())}")
-    print("后端服务运行在: http://localhost:5000")
-    print("前端服务运行在: http://localhost:3000")
+    print("后端服务运行在: http://localhost:5001")
+    print("前端服务运行在: http://localhost:3001")
     
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

@@ -1,0 +1,35 @@
+# Systemd服务配置文件 - 业余无线电考试系统后端
+# 部署路径: /etc/systemd/system/radio-exam-backend.service
+
+[Unit]
+Description=Radio Exam Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/radio-exam/backend
+Environment=PATH=/opt/radio-exam/venv/bin
+Environment=PYTHONPATH=/opt/radio-exam/backend
+ExecStart=/opt/radio-exam/venv/bin/python app.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=radio-exam-backend
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/radio-exam/backend/data
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
