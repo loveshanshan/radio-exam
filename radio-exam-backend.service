@@ -12,7 +12,7 @@ Group=www-data
 WorkingDirectory=/opt/radio-exam/backend
 Environment=PATH=/opt/radio-exam/venv/bin
 Environment=PYTHONPATH=/opt/radio-exam/backend
-ExecStart=/opt/radio-exam/venv/bin/python app.py
+ExecStart=/opt/radio-exam/venv/bin/python /opt/radio-exam/backend/app.py
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=10
